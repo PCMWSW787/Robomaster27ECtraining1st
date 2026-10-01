@@ -43,12 +43,10 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
+uint8_t requested_mode;
+uint32_t tick;
 uint32_t cur_tick, last_tick;
 uint32_t start_tick;
-volatile uint8_t requested_mode = 0;
-uint32_t tick = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,8 +108,7 @@ int main(void)
     else if (requested_mode == 1)
     {
       tick += (cur_tick - last_tick);
-      if (tick >= 2000)
-        tick -= 2000;
+      tick %= 2000;
       if (tick <= 1000)
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, tick);
       else
@@ -120,10 +117,7 @@ int main(void)
     else if (requested_mode == 2)
     {
       tick += (cur_tick - last_tick);
-      if (tick >= 1000)
-      {
-        tick -= 1000;
-      }
+      tick %= 1000;
       if (tick <= 500)
       {
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 1000);
@@ -198,15 +192,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == KEY_Pin)
-  {
-    requested_mode++;
-    requested_mode %= 3;
-    if (requested_mode == 1 || requested_mode == 2) tick = 0;
-  }
-}
 /* USER CODE END 4 */
 
 /**
